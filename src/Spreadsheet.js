@@ -20,8 +20,6 @@ const getColumnLabel = (columnIndex) => {
     return label;
 };
 
-
-
 const Spreadsheet = () => {
     const gridRef = useRef(null);
     const [data, setData] = useState(orig_data);    //数据
@@ -42,9 +40,9 @@ const Spreadsheet = () => {
         newSelection,
         setSelections,
         setActiveCell,
-        onMouseDown, // 鼠标选中
-        onKeyDown: onSelectKeyDown, // 键盘上下左右选中
-        selectionProps,
+        onKeyDown: onSelectKeyDown,
+        onMouseDown: onSelectMouseDown,
+        ...selectionProps
     } = useSelection({
         gridRef,
         // initialActiveCell: { rowIndex: 0, columnIndex: 0 },
@@ -97,15 +95,20 @@ const Spreadsheet = () => {
         },
     });
 
-    const { editorComponent, onDoubleClick, isEditInProgress, onKeyDown: onEditKeyDown, editableProps } = useEditable({
+    const {
+        editorComponent,
+        onDoubleClick,
+        isEditInProgress,
+        onKeyDown: onEditKeyDown,
+        onMouseDown: onEditMouseDown,
+        ...editableProps
+    } = useEditable({
         gridRef,
         getValue: getCellValue,
         selections,
         activeCell,
         columnCount: columnCount,
         rowCount: rowCount,
-        // isHiddenRow,
-        // isHiddenColumn,
         onCancel: (cell) => {
             console.log('onCancel', cell);
         },
@@ -223,10 +226,16 @@ const Spreadsheet = () => {
         }
         else {
             // 其他键盘事件传递给原有的onKeyDown处理
-            onSelectKeyDown(e);
             onEditKeyDown(e);
+            onSelectKeyDown(e);
         }
     };
+
+    // 合并鼠标事件
+    const onMouseDown = (e) => {
+        onEditMouseDown(e);
+        onSelectMouseDown(e);
+    }
 
     return (
         <div

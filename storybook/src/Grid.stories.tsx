@@ -1056,7 +1056,6 @@ export const EditableGrid: React.FC = () => {
         <select
           style={{ width: "100%" }}
           autoFocus
-          value={value}
           onBlur={onBlur}
           value={value}
           onChange={(e) => {
